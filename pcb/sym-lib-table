@@ -1,0 +1,6 @@
+(sym_lib_table
+  (lib (name "doit-esp32-devkit-v1")(type "Legacy")(uri "C:/Users/James/Desktop/brother/pcb-esp32/libraries/doit-esp32-devkit-kicad-master/doit-esp32-devkit-v1.lib")(options "")(descr ""))
+  (lib (name "SST39SF040-55-4I-WHE")(type "Legacy")(uri "C:/Users/James/Desktop/brother/pcb-esp32/libraries/flash-chip/SST39SF040-55-4I-WHE.lib")(options "")(descr ""))
+  (lib (name "esp32-wroom")(type "KiCad")(uri "C:/Users/James/Desktop/brother/pcb-esp32/libraries/esp32-wroom-library/esp32-wroom.kicad_sym")(options "")(descr ""))
+  (lib (name "mcp23016")(type "Legacy")(uri "${KIPRJMOD}/libraries/mcp23016/MCP23016-I_SO.lib")(options "")(descr ""))
+)
