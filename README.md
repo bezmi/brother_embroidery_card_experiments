@@ -54,3 +54,6 @@ There are also many random thumbnails in lots of languages for UI elements. It a
 Many of the elements of a standard PEC file are present in this file, but the order is different.
 
 The main thing we need to figure out is where the values which point to the start of the stitch data and thumbnails for each PES file written to the card are stored.
+
+# Reverse engineering the file structure
+See [notes.org](notes.org)

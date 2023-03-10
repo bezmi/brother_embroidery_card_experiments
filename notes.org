@@ -1,0 +1,104 @@
+#+title: Notes
+
+* General notes
+- 2 bytes followed by ~0x40~ points to address with offset +0x00000
+- 2 bytes followed by ~0x41~ points to address with offset +0x10000
+
+* Header block @0x0000
+- @0x00A1 points to an address. Following that appears to go to the end of the colour info always with bytes ~80 00 01 02 03 04 05 06 FE~
+- @0x00B7, always has value ~0xF1~
+- @0x120, @0x128, @0x130 are pointers and their addresses are always ~00 00 41~, ~04 00 41~ and ~08 00 41~ respectively.
+  - going to those addresses doesn't reveal much of anything, not sure what they represent
+- @0x0157 is a pointer to location after the alphanumeric storage block. Values:
+  - ~01~ for single design files
+  - ~02~ for 2 design files
+  - ~03~ for 3 design files
+  - indicates number of design files?
+- @0x0165 pointer:
+  - always leads to a value of ~0xFF~ for pedbasic files
+  - vikant files:
+    - bw: pointer to value ~0x00~
+    - color: pointer to value ~0x00~
+    - bw-color: pointer to value ~0x00~
+    - color-bw: pointer to value: ~0x00~
+  - in the vikant files it actually goes to a list of 3 pointers, which always lead to values ~0x00~, ~0x00~, ~0xXX~ where ~0xXX~ is the hex code of the first colour of the first file  
+  - in the pedbasic files, if we consider it to also lead to a list of pointers, the first one has address ~FFFF~ (NULL) and the next two point to values ~0x00~, ~0x14~ where again the ~0x14~ (black) is the start of the colour list (for the inkstitch files).
+- @0x0168, always ~0x01~
+- @0x0169 to @0x0185 (inclusive) ~0xFF~
+- @0x0186, always ~0x00~
+- @0x0187, pointer to value, also indicates number of designs?:
+  - ~01~ for single design files
+  - ~02~ for double design files
+  - ~03~ for triple design files
+- @0x018B, pointer to the exact same location as @0x0187
+
+* 2nd block @0x1000
+- @0x1000 there is a pointer. Eg in ~inkstitch_color_bw_pedbasic.bin~ we have ~ED 91 41~ this represents address @0x191ED.
+  - following this address takes us to an array of pointers.
+    In the above file, the first address in this array points to the start of the stitch data for the first file
+    and the second one points to the start of the stitch data for the second file.
+  - confirmed with the files that have 3 designs on them. There are 3 elements in this list
+- @0x1003, pointer to same block, values:
+  - ~0x00~ for pedbasic
+  - ~0x01~ for vikant
+  - for the files with 2 designs, 2 copies of this data are present
+- @0x100F there is a pointer to (for my image files so far) @0x1069 which has the value ~0x08~
+- @0x1012 there is a pointer to an address in the same block with value ~0x00~
+- @0x1015 pointer to same block, value ~0xA0~
+- @0x1018 pointer to same block , value ~0x67~
+- @0x101B, pointer to same block, value ~0x00~
+- @0x101E, pointer to same block, value ~0x01~
+- @0x1021, pointer to same block, value ~0xFF~
+- @0x1024, pointer to same block, value ~0xFF~
+- @0x1027 to @0x1032 (inclusive), 12 bytes of ~0xFF~
+- @0x1033, pointer to same block, value ~0x00~
+- @0x1036, pointer to same block, value ~0x00~
+- @0x1039 to @0x1041 (inclusive), 9 bytes of ~0xFF~
+- @0x1042, pointer to same block, value ~0x32~:
+  - the files with 2 designs have 2 copies of this data
+- @0x1045, pointer to same block, values:
+  - ~0x04~ for bw files
+  - ~0x02~ for color files
+  - bw-color files have ~04 02~
+  - color-bw files have ~02 04~
+  - bird-scroll-inkstitchcolor file has ~02 01 02~
+  - this is definitely the number of colours in each design (minus 1) because bird has 3, scroll has 2 and inkstitchcolor has 3
+- @0x1048, pointer to same block values:
+  - ~0x04~ for vikant files
+  - ~0x06~ for pedbasic files
+- @0x104B to @0x1050 (inclusive), 6 bytes of ~0xFF~
+- @0x1051, pointer to same block, value ~0x40~
+  - the files with 2 designs have 2 copies of this data
+- @0x1054, pointer to same block, value ~0x06~
+  - the files with 2 designs have 2 copies of this data
+- @0x1057, pointer to same block, value ~0x00~, always 2 copies in all files
+- @0x105A, pointer to same block, value ~0x00~
+  - the files with 2 designs have 2 copies of this data
+- @0x105D to @0x1068 (inclusive) 12 bytes of ~0xFF~
+- @0x1069 to end of section, data for the previous bits
+
+* 3rd block @0x4000
+- @0x4299 will point to the address where the pointer to the array of overview images is stored.
+  eg ~inkstitch_color_bw_pedbasic.bin~ has ~B0 42 40~ @0x4299
+  which points to @0x42B0.
+  The value at this address is ~CF 91 41~ which means go to @0x191CF.
+  Following this link gets us to the start of the overview images array, where each set of values is the address of the image.
+- @0x4000, follow the address and follow the address from there to get to a value after ~1E 00 0C~.
+- @0x400C always points to the start of the ascii stuff which is usually @0x41A4
+
+* Taking a look at an "official" card image
+- @0x00A1 goes to an address but instead of ~80 00 01 02 03 04 05 06 FE~ it has ~20 00 01 02 03 04 05 06 FE~
+- instead of @0x120, @0x128, @0x130, there are addresses at @0x121, @0x129 and @0x131
+  - they point to @0x120, @0x128, @0x130 and all three have value ~0x5C~
+- @0x157 following the address gives ~0x1F~. I think that the card (No. 52) has 31 designs so this seems to make sense
+  as being the number of designs
+- @0x187 also points to a value of ~0x1F~.
+  Which seems to confirm that both of these addresses give us the number of designs
+- @0x1000 doesn't seem to point to an array like it does in our other files?
+  - I think it may be a problem with the readout (in the EEVblog post, AeroX2 mentions issues with reading the data out reliably)
+  - the data @0x1000 reads ~20 F0 42~.
+  - if I go to @0x2F020, it doesn't contain an address as it should. @0x2F000 does.
+  - It also looks like many of the ~00~ values in this dump are ~20~ instead.
+  - this can be seen from the thumbnails, which have black artifacts where a bit is flipped from ~00~ to ~20~.
+- @0x4299, the following the trail of addresses (assuming ~0x20~ is actually ~0x00~), we get to the correct address for the
+  first overview thumbnail as seen using the jupyter notebook.
