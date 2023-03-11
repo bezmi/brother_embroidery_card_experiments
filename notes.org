@@ -7,13 +7,18 @@
 * Header block @0x0000
 - @0x00A1 points to an address. Following that appears to go to the end of the colour info always with bytes ~80 00 01 02 03 04 05 06 FE~
 - @0x00B7, always has value ~0xF1~
+- @0x110, always has value ~0x5E~
+- @0x116, always has value ~0xFB~
 - @0x120, @0x128, @0x130 are pointers and their addresses are always ~00 00 41~, ~04 00 41~ and ~08 00 41~ respectively.
   - going to those addresses doesn't reveal much of anything, not sure what they represent
+- @0x150 to 0x155, (inclusive) fill with ~0x00~
+- @0x156 always ~0x0A~
 - @0x0157 is a pointer to location after the alphanumeric storage block. Values:
   - ~01~ for single design files
   - ~02~ for 2 design files
   - ~03~ for 3 design files
   - indicates number of design files?
+- @0x164, always ~0x00~
 - @0x0165 pointer:
   - always leads to a value of ~0xFF~ for pedbasic files
   - vikant files:
@@ -30,7 +35,10 @@
   - ~01~ for single design files
   - ~02~ for double design files
   - ~03~ for triple design files
+- @0x18A, always ~0x00~
 - @0x018B, pointer to the exact same location as @0x0187
+- looks like the address @0x187 is always 6 bytes ahead of the address @0x157
+- the address @0x165 is always 6 bytes ahead of the address @0x187
 
 * 2nd block @0x1000
 - @0x1000 there is a pointer. Eg in ~inkstitch_color_bw_pedbasic.bin~ we have ~ED 91 41~ this represents address @0x191ED.
